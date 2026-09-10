@@ -128,7 +128,7 @@
     <string name="a11y_repair_failed">Repair failed — try enabling it in Settings</string>
     <string name="a11y_repair_footer_shizuku">Android removes the accessibility grant whenever an app is force-stopped, and does not restore it automatically. Shizuku can write it back directly.</string>
     <string name="a11y_repair_footer_manual">Android removes the accessibility grant whenever an app is force-stopped, and does not restore it automatically. Install and authorize Shizuku to repair this in one tap in future.</string>
-    <string name="bg_service_notification_title">Minis Agent Active</string>
+    <string name="bg_service_notification_title">HARIS Agent Active</string>
     <string name="bg_service_notification_text">%1$s | %2$s | %3$s</string>
     <!-- Shown on the ongoing notification / Live Update chip once the agent
          task has finished but the service is still alive because the user is
@@ -320,7 +320,7 @@
     <string name="settings_section_logs">Logs</string>
     <string name="settings_logs_subtitle">View and export app logs</string>
     <string name="settings_section_about">About</string>
-    <string name="settings_about_minis">About Minis</string>
+    <string name="settings_about_minis">About HARIS</string>
     <string name="settings_about_subtitle">Version and project info</string>
     <string name="settings_privacy_policy">Privacy Policy</string>
     <string name="settings_feedback">Feedback</string>
@@ -398,8 +398,8 @@
     <string name="common_close">Close</string>
     <string name="common_skip">Skip</string>
     <string name="common_next">Next</string>
-    <string name="onboarding_welcome_title">Welcome to Minis</string>
-    <string name="onboarding_welcome_subtitle">Your Minis Agent with terminal, browser, and native device access.</string>
+    <string name="onboarding_welcome_title">Welcome to HARIS</string>
+    <string name="onboarding_welcome_subtitle">Your HARIS Agent with terminal, browser, and native device access.</string>
     <string name="onboarding_get_started">Get Started</string>
     <string name="onboarding_provider_title">Add a Provider</string>
     <string name="onboarding_provider_subtitle">Enter an API key for at least one provider to get started.</string>
@@ -609,7 +609,7 @@
     <string name="browser_history_results">Results</string>
     <string name="browser_history_clear_dialog_title">Clear Browsing History?</string>
     <string name="browser_history_clear_dialog_message">This will remove all browsing history. This cannot be undone.</string>
-    <string name="terminal_title">Minis Shell</string>
+    <string name="terminal_title">HARIS Shell</string>
     <string name="terminal_clear">Clear</string>
     <string name="terminal_show_keyboard">Show</string>
     <string name="terminal_hide_keyboard">Hide</string>
@@ -1717,8 +1717,8 @@
     <string name="back">Back</string>
 
     <!-- Welcome / onboarding (T332) -->
-    <string name="sessionlist_welcome_title">Welcome to Minis</string>
-    <string name="sessionlist_welcome_subtitle">Your first On-Device Agent is almost ready.</string>
+    <string name="sessionlist_welcome_title">Welcome to HARIS</string>
+    <string name="sessionlist_welcome_subtitle">Your first On-Device HARIS Agent is ready.</string>
     <string name="sessionlist_welcome_step1_title">Add a Provider</string>
     <string name="sessionlist_welcome_step1_subtitle">Configure an API key or sign in with OAuth</string>
     <string name="sessionlist_welcome_step2_title">Select Models</string>

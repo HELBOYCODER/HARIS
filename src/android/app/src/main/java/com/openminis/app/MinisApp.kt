@@ -451,6 +451,37 @@ class MinisApp : Application(), ImageLoaderFactory {
         // the comment there for why an exception at this point permanently
         // breaks the Application and produces the GH#147 crash loop.
         skillRepository = SkillRepository(this)
+        // [HARIS-MCP] Seed essential keyless MCPs (gitmcp, context7, deepwiki, mu) on first launch
+        val defaultMcpFile = java.io.File(filesDir, "minis-global/mcp-servers/servers.json")
+        if (!defaultMcpFile.exists()) {
+            defaultMcpFile.parentFile?.mkdirs()
+            defaultMcpFile.writeText(
+                """{
+  "mcpServers": {
+    "gitmcp": {
+      "url": "https://gitmcp.io/docs",
+      "note": "GitHub documentation MCP (keyless)",
+      "enabled": true
+    },
+    "context7": {
+      "url": "https://mcp.context7.com/mcp",
+      "note": "Library docs MCP (keyless)",
+      "enabled": true
+    },
+    "deepwiki": {
+      "url": "https://mcp.deepwiki.com/mcp",
+      "note": "GitHub knowledge MCP (keyless)",
+      "enabled": true
+    },
+    "mu": {
+      "url": "https://micro.mu/mcp",
+      "note": "Agent platform MCP (keyless)",
+      "enabled": true
+    }
+  }
+}"""
+            )
+        }
         mcpRepository = MCPRepository(this)
         memoryRepository = MemoryRepository(java.io.File(filesDir, "minis-global/memory"))
         webAppShortcutRepository = WebAppShortcutRepository(database.webAppShortcutDao())

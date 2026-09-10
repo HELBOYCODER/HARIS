@@ -47,6 +47,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
@@ -195,6 +196,155 @@ fun ProviderListScreen(
             }
         },
     ) {
+        // ─── HARIS Quick Integrations (9Router & Nano Banana) ─────────
+        val has9Router = instances.any { it.label.contains("9Router") || (it.customBaseURL ?: "").contains("20128") }
+        val hasNanoBanana = instances.any { it.providerType == ProviderType.nanoBanana || it.label.contains("Nano Banana") }
+        val coroutineScope = rememberCoroutineScope()
+
+        SettingsSection(
+            header = "سرویس‌های لوکال و آماده (HARIS Built-ins)",
+            footer = "راه‌اندازی فوری پرووایدرهای داخلی با یک کلیک بدون نیاز به ساخت دستی",
+        ) {
+            // 9Router Card
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 14.dp, vertical = 6.dp),
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(42.dp)
+                            .background(Color(0xFF00BCD4).copy(alpha = 0.15f), CircleShape),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Terminal,
+                            contentDescription = null,
+                            tint = Color(0xFF00BCD4),
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "9Router Local Gateway",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Text(
+                            text = if (has9Router) "متصل روی پورت 20128 • مدل‌های رایگان فعال" else "درگاه مدل‌های رایگان محلی (Port 20128)",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    if (has9Router) {
+                        Surface(
+                            shape = RoundedCornerShape(20.dp),
+                            color = Color(0xFF4CAF50).copy(alpha = 0.15f),
+                        ) {
+                            Text(
+                                text = "فعال",
+                                color = Color(0xFF2E7D32),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                            )
+                        }
+                    } else {
+                        Button(
+                            onClick = {
+                                isInstalling9Router = true
+                                coroutineScope.launch {
+                                    val res = RouterProviderInstaller.install(context, providerRepository)
+                                    isInstalling9Router = false
+                                    installResultMessage = res.message
+                                    Toast.makeText(context, if (res.success) "9Router با موفقیت فعال شد!" else "خطا: ${res.message}", Toast.LENGTH_LONG).show()
+                                }
+                            },
+                            enabled = !isInstalling9Router,
+                            shape = RoundedCornerShape(8.dp),
+                        ) {
+                            Text(if (isInstalling9Router) "نصب..." else "اتصال")
+                        }
+                    }
+                }
+            }
+
+            // Nano Banana Card
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 14.dp, vertical = 6.dp),
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.surfaceContainerHigh,
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(42.dp)
+                            .background(Color(0xFFFFB300).copy(alpha = 0.15f), CircleShape),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Image,
+                            contentDescription = null,
+                            tint = Color(0xFFFFB300),
+                            modifier = Modifier.size(24.dp),
+                        )
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Nano Banana (Gemini)",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Text(
+                            text = if (hasNanoBanana) "آماده تولید عکس با کیفیت 2K" else "تصویرساز با کلید جمینی و چرخش خودکار",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    if (hasNanoBanana) {
+                        Surface(
+                            shape = RoundedCornerShape(20.dp),
+                            color = Color(0xFF4CAF50).copy(alpha = 0.15f),
+                        ) {
+                            Text(
+                                text = "فعال",
+                                color = Color(0xFF2E7D32),
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                            )
+                        }
+                    } else {
+                        Button(
+                            onClick = { showNanoBananaDialog = true },
+                            shape = RoundedCornerShape(8.dp),
+                        ) {
+                            Text("تنظیم")
+                        }
+                    }
+                }
+            }
+        }
+
         if (instances.isEmpty()) {
             Column(
                 modifier = Modifier

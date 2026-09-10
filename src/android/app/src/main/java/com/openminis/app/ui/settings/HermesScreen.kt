@@ -107,7 +107,7 @@ fun HermesScreen(
             }
 
             when (selectedTab) {
-                0 -> HermesSkillsTab(repo = repo, onOpenSkillDetail = onOpenSkillDetail)
+                0 -> HermesSkillsTab(repo = repo, onOpenSkillDetail = onOpenSkillDetail, onOpenTerminal = onOpenTerminal)
                 1 -> HermesBoardTab(repo = repo)
                 2 -> HermesMemoryTab(repo = repo)
                 3 -> HelboySoulTab(onOpenTerminal = onOpenTerminal)
@@ -124,6 +124,7 @@ fun HermesScreen(
 private fun HermesSkillsTab(
     repo: SoulRepository,
     onOpenSkillDetail: (String) -> Unit,
+    onOpenTerminal: (String) -> Unit = {},
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -215,6 +216,43 @@ private fun HermesSkillsTab(
                 PresetChip("اپراتور اجرایی", "operator") { showAddDialog = true }
                 PresetChip("پژوهشگر عمیق", "researcher") { showAddDialog = true }
                 PresetChip("برنامه‌ریز سیستم", "planner") { showAddDialog = true }
+            }
+        }
+
+        // 9Router Local AI Gateway Quick Action
+        item {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+                shape = RoundedCornerShape(12.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(Color(0xFF00BCD4).copy(alpha = 0.15f), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Default.Terminal, contentDescription = null, tint = Color(0xFF00BCD4), modifier = Modifier.size(20.dp))
+                    }
+                    Spacer(Modifier.width(10.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("درگاه 9Router Local (پورت 20128)", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                        Text("مدل‌های رایگان محلی MiMo, Ling, Nemotron", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Button(
+                        onClick = { onOpenTerminal("9router-setup") },
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+                    ) {
+                        Text("ترمینال 9Router", fontSize = 11.sp)
+                    }
+                }
             }
         }
 

@@ -79,4 +79,16 @@
     <string name="shortcut_camera_chat_short">تحلیل تصویر</string>
     <string name="shortcut_camera_chat_long">گرفتن عکس و گفتگو</string>
     <string name="webapp_activity_label">برنامه وب HARIS</string>
+
+    <!-- Welcome / Onboarding -->
+    <string name="sessionlist_welcome_title">خوش آمدید به HARIS</string>
+    <string name="sessionlist_welcome_subtitle">اولین ایجنت هوش مصنوعی مستقل روی دستگاه شما آماده است.</string>
+    <string name="onboarding_welcome_title">خوش آمدید به HARIS</string>
+    <string name="onboarding_welcome_subtitle">ایجنت هوشمند اختصاصی با دسترسی به ترمینال، مرورگر و ابزارهای سیستم‌عامل.</string>
+    <string name="sessionlist_welcome_step1_title">افزودن پرووایدر</string>
+    <string name="sessionlist_welcome_step1_subtitle">تنظیم کلید API، ناین روتر لوکال یا نانو بنانا</string>
+    <string name="sessionlist_welcome_step2_title">انتخاب مدل</string>
+    <string name="sessionlist_welcome_step2_subtitle">مدل‌های مورد نظر خود را انتخاب کنید</string>
+    <string name="sessionlist_welcome_step3_title">شروع گفتگو</string>
+    <string name="sessionlist_welcome_step3_subtitle">برای آغاز پیام دهید</string>
 </resources>
