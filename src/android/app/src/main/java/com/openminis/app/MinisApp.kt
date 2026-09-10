@@ -34,7 +34,6 @@ import com.openminis.app.provider.ModelsDevApi
 import com.openminis.app.provider.NanoBananaKeyStore
 import com.openminis.app.sandbox.ExecutionCoordinator
 import com.openminis.app.haris.soul.SoulRepository
-import com.openminis.app.data.db.AppDatabase
 import com.openminis.app.sandbox.MountedFolderCoordinator
 import com.openminis.app.sandbox.NativeOffloadServer
 import com.openminis.app.sandbox.PRootKernel
@@ -404,7 +403,7 @@ class MinisApp : Application(), ImageLoaderFactory {
         // known holes, but the failure MODE is what makes this dangerous: any
         // throw between the first assignment and `subsystemsInitialized = true
         // [HARIS-SOUL] Room-backed hermes (board+memory+skills) — Android-native
-        try{ com.openminis.app.data.db.AppDatabase.get(this); com.openminis.app.haris.soul.SoulRepository.get(this) } catch(e:Exception){ android.util.Log.e("HARIS-SOUL","init failed", e)}
+        try{ AppDatabase.getInstance(this); SoulRepository.get(this) } catch(e:Exception){ android.util.Log.e("HARIS-SOUL","init failed", e)}
         // leaves the Application permanently half-built. onCreate never re-runs,
         // so every later launch crashes reading an unassigned lateinit, each
         // crash re-trips the crash-burst detector, and the user is locked out
