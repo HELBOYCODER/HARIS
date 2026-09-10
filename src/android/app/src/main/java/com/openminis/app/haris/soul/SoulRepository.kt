@@ -6,7 +6,7 @@ import com.openminis.app.haris.soul.db.HermesSkillEntity
 import com.openminis.app.haris.soul.db.MemoryEntryEntity
 import kotlinx.coroutines.flow.Flow
 // ponytail: single repo, mirrors MemoryRepository + SkillRepository HARIS patterns.
-class HermesRepository(ctx:Context){
+class SoulRepository(ctx:Context){
  private val dao=AppDatabase.getInstance(ctx).soulDao()
  // Board
  fun observeBoard():Flow<List<BoardTaskEntity>> = dao.observeBoard()

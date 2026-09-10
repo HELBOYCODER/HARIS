@@ -64,10 +64,10 @@ enum class ProviderType(val displayName: String) {
      */
     val isUsable: Boolean
         get() = when (this) {
-            // openAIResponses included: it routes through the OpenAI provider
+            // nanoBanana is image-gen, not chat; not usable for agent loop: it routes through the OpenAI provider
             // with the Responses endpoint forced on.
             anthropic, gemini, openAI, openRouter, xAI, kimiCode, openAIResponses -> true
-            antigravity, unsupported -> false
+            nanoBanana, antigravity, unsupported -> false
         }
 
     val builtInModels: List<LLMModel>
