@@ -11,6 +11,7 @@ enum class ProviderType(val displayName: String) {
     openAI("OpenAI"),
     openRouter("OpenRouter"),
     xAI("xAI (Grok)"),
+    nanoBanana("Nano Banana (Gemini Image)"),
     // [T-kimi-oauth] Kimi Code (Coding Plan) — RFC 8628 device-code OAuth,
     // OpenAI-compatible upstream at api.kimi.com/coding/v1. DB round-trip is
     // name-based (ProviderCredential.valueOf), so appending is migration-safe.

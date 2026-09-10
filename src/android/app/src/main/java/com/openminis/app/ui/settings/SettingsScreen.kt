@@ -50,6 +50,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.Switch
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -58,6 +59,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -113,6 +115,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+var isPonytailEnabled by remember { mutableStateOf(true) }  // PONYTAIL Mode (Lazy Senior Dev)
                 title = { Text(stringResource(R.string.settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -196,6 +199,37 @@ fun SettingsScreen(
                     subtitle = stringResource(R.string.settings_memory_subtitle),
                     onClick = onMemoryClick,
                 )
+                // PONYTAIL Mode (Lazy Senior Dev Spirit)
+                SettingsSection(
+                    title = "Spirit Mode",
+                    footer = "Enable PONYTAIL Lazy Senior Dev rules"
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { isPonytailEnabled = !isPonytailEnabled },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(
+                                text = "PONYTAIL",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = "Lazy Senior Dev Spirit",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = isPonytailEnabled,
+                            onCheckedChange = { isPonytailEnabled = it }
+                        )
+                    }
+                }
                 // [T-mcp-integration-android] MCP Integrations — directly below Memory.
                 // [T-android-mcp-icon-distinct] Dashboard (2x2 block grid) instead of
                 // Extension so MCP no longer shares the Skills row's puzzle-piece icon —

@@ -1,6 +1,8 @@
 package com.openminis.app.ui.chat
 
 import android.content.Intent
+import com.openminis.app.ui.util.SpeechToText
+
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri

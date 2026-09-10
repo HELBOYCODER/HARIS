@@ -1,6 +1,7 @@
 package com.openminis.app.ui.settings
 
 import android.net.Uri
+import com.openminis.app.provider.RouterProviderInstaller
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,7 +22,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
+import com.openminis.app.provider.NanoBananaKeyStore
 import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.Terminal
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,7 +36,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -75,11 +86,44 @@ fun ProviderListScreen(
     val context = LocalContext.current
 
     var showMenu by remember { mutableStateOf(false) }
+    var show9RouterInstallDialog by remember { mutableStateOf(false) }
+    var isInstalling9Router by remember { mutableStateOf(false) }
+    var installResultMessage by remember { mutableStateOf<String?>(null) }
+    var showNanoBananaDialog by remember { mutableStateOf(false) }
+    var isInstallingNanoBanana by remember { mutableStateOf(false) }
+    var nanoBananaApiKey by remember { mutableStateOf("") }
+    // New state for adding additional API keys to an existing Nano Banana provider
+    var showAddKeyDialog by remember { mutableStateOf(false) }
+    var newApiKeyInput by remember { mutableStateOf("") }
+    var selectedProviderId by remember { mutableStateOf<String?>(null) }
     // [T-android-swipe-row-actions] Pending swipe-delete target. Held here
     // rather than per-row so the confirmation survives the row being
     // recomposed/reordered underneath it.
     var instanceToDelete by remember {
         mutableStateOf<com.openminis.app.data.model.ProviderInstance?>(null)
+    }
+
+    // Show add-key dialog when requested
+    if (showAddKeyDialog && selectedProviderId != null) {
+        ShowAddKeyDialog(
+            onDismiss = {
+                showAddKeyDialog = false
+                newApiKeyInput = ""
+            },
+            providerId = selectedProviderId,
+            apiKeyInput = newApiKeyInput,
+            onApiKeyChange = { newApiKeyInput = it },
+            onSave = {
+                val stored = NanoBananaKeyStore.storeApiKey(context, selectedProviderId!!, newApiKeyInput)
+                if (stored) {
+                    Log.d(TAG, "Added extra API key for provider $selectedProviderId")
+                } else {
+                    Log.e(TAG, "Failed to add API key for provider $selectedProviderId")
+                }
+                showAddKeyDialog = false
+                newApiKeyInput = ""
+            }
+        )
     }
 
     val importLauncher = rememberLauncherForActivityResult(
@@ -126,6 +170,22 @@ fun ProviderListScreen(
         title = stringResource(R.string.provider_list_providers),
         onBack = onBack,
         actions = {
+            // 9Router installation button
+            IconButton(onClick = { show9RouterInstallDialog = true }) {
+                Icon(
+                    Icons.Default.Terminal,
+                    contentDescription = "Install 9Router",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+            // Nano Banana installation button
+            IconButton(onClick = { showNanoBananaDialog = true }) {
+                Icon(
+                    Icons.Default.Image,
+                    contentDescription = "Install Nano Banana",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
             IconButton(onClick = { showMenu = true }) {
                 Icon(Icons.Default.Add, contentDescription = stringResource(R.string.provider_list_add_provider))
             }
@@ -261,6 +321,10 @@ fun ProviderListScreen(
                                         apiKey = apiKey,
                                         isConfigured = isConfigured,
                                         onClick = { onProviderClick(instance.id) },
+                                        onAddKeyClick = { id ->
+                                            selectedProviderId = id
+                                            showAddKeyDialog = true
+                                        }
                                     )
                                 }
                             }
@@ -392,6 +456,7 @@ private fun ProviderInstanceRow(
     apiKey: String?,
     isConfigured: Boolean,
     onClick: () -> Unit,
+    onAddKeyClick: (String) -> Unit,
 ) {
     val isActive = isConfigured && instance.isEnabled
 
@@ -472,6 +537,16 @@ private fun ProviderInstanceRow(
             Spacer(Modifier.width(8.dp))
         }
 
+        // Add API key button for Nano Banana providers
+        if (instance.providerType == ProviderType.nanoBanana) {
+            IconButton(onClick = { onAddKeyClick(instance.id) }) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add API key",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
         Icon(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
@@ -538,5 +613,266 @@ private fun ShadowVoiceRow(
             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
             modifier = Modifier.size(20.dp),
         )
+    }
+}
+
+// 9Router Installation Dialog
+@Composable
+fun Show9RouterInstallDialog(
+    onDismiss: () -> Unit,
+    onInstall: () -> Unit,
+    isInstalling: Boolean,
+    resultMessage: String?
+) {
+    if (true) { // This would normally be controlled by a state variable
+        ModalBottomSheet(
+            onDismissRequest = onDismiss,
+            sheetState = rememberModalBottomSheetState(),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Terminal,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = "Install 9Router Local Gateway",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "9Router is a local AI gateway that provides free model access and unified provider management on port 20128.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    TextButton(onClick = onDismiss, modifier = Modifier.weight(1f)) {
+                        Text("Cancel")
+                    }
+                    Button(onClick = onInstall, modifier = Modifier.weight(1f), enabled = !isInstalling) {
+                        Text(if (isInstalling) "Installing..." else "Install")
+                    }
+                }
+            }
+        }
+    }
+}
+
+// Nano Banana Installation Dialog
+@Composable
+fun ShowNanoBananaDialog(
+
+    // New dialog to add an additional API key to an existing Nano Banana provider
+    @Composable
+    fun ShowAddKeyDialog(
+        onDismiss: () -> Unit,
+        providerId: String?,
+        apiKeyInput: String,
+        onApiKeyChange: (String) -> Unit,
+        onSave: () -> Unit,
+    ) {
+        if (providerId == null) return
+        ModalBottomSheet(
+            onDismissRequest = onDismiss,
+            sheetState = rememberModalBottomSheetState(),
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(
+                        text = "Add Gemini API key",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    value = apiKeyInput,
+                    onValueChange = onApiKeyChange,
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("sk-...") },
+                    singleLine = true
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    TextButton(onClick = onDismiss, modifier = Modifier.weight(1f)) {
+                        Text("Cancel")
+                    }
+                    Button(onClick = onSave, modifier = Modifier.weight(1f)) {
+                        Text("Save")
+                    }
+                }
+            }
+        }
+    }
+
+    fun ShowNanoBananaDialog(
+    onDismiss: () -> Unit,
+    apiKey: String,
+    onApiKeyChange: (String) -> Unit,
+    onInstall: () -> Unit,
+    isInstalling: Boolean
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Image,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(32.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "Nano Banana (Gemini Image API)",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Generate and edit images using Google's Gemini image generation. Supports text-to-image, image editing, and multiple aspect ratios.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Gemini 3.1 Flash Image (2K)")
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Text-to-image & image editing")
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Aspect ratio control (1:1, 16:9, etc.)")
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Gemini API Key",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            OutlinedTextField(
+                value = apiKey,
+                onValueChange = onApiKeyChange,
+                modifier = Modifier.fillMaxWidth(),
+                placeholder = { Text("sk-...") },
+                singleLine = true
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = "Get your key from: https://aistudio.google.com/apikey",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                TextButton(onClick = onDismiss, modifier = Modifier.weight(1f)) {
+                    Text("Cancel")
+                }
+                Button(onClick = onInstall, modifier = Modifier.weight(1f), enabled = !isInstalling && apiKey.isNotBlank()) {
+                    Text(if (isInstalling) "Installing..." else "Install")
+                }
+            }
+        }
     }
 }
