@@ -99,10 +99,10 @@ object RouterProviderInstaller {
 
             // Pre-seed 100% free models from Antigravity/OpenCode into 9Router
             val freeModels = listOf(
-                LLMModel(id = "oc/mimo-v2.5-free", displayName = "MiMo v2.5 (Free)"),
-                LLMModel(id = "oc/ling-3.0-flash-fin-free", displayName = "Ling 3.0 Flash (Free)"),
-                LLMModel(id = "oc/nemotron-3.5-lightning-free", displayName = "Nemotron 3.5 Lightning (Free)"),
-                LLMModel(id = "oc/big-pickle", displayName = "Big Pickle (Free)")
+                LLMModel(id = "oc/mimo-v2.5-free", displayName = "MiMo v2.5 (Free)", provider = "9router"),
+                LLMModel(id = "oc/ling-3.0-flash-fin-free", displayName = "Ling 3.0 Flash (Free)", provider = "9router"),
+                LLMModel(id = "oc/nemotron-3.5-lightning-free", displayName = "Nemotron 3.5 Lightning (Free)", provider = "9router"),
+                LLMModel(id = "oc/big-pickle", displayName = "Big Pickle (Free)", provider = "9router")
             )
             providerRepository.replaceEntries(providerId, freeModels)
 

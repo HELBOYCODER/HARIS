@@ -5610,6 +5610,7 @@ fun ChatScreen(
                         val mergedTextStyle = MaterialTheme.typography.bodyMedium.copy(
                             fontSize = 16.5.sp * chatInputFontScale,
                             color = MaterialTheme.colorScheme.onSurface,
+                            textDirection = androidx.compose.ui.text.style.TextDirection.ContentOrRtl,
                         )
                         // [T-android-enter-to-send-broken] Live read of the
                         // "Return key sends" preference. Bound here (not
@@ -5662,11 +5663,6 @@ fun ChatScreen(
                         }
                         BasicTextField(
                             value = inputFieldValue,
-                            textStyle = androidx.compose.material3.LocalTextStyle.current.copy(
-                                textDirection = androidx.compose.ui.text.style.TextDirection.ContentOrRtl,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = 16.sp * chatInputFontScale
-                            ),
                             onValueChange = { tfv ->
                                 // T217-2: drop IME residue commits in 300ms post-send window.
                                 // finishComposingText (fired by clearFocus on send) makes
