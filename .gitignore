@@ -26,6 +26,12 @@ render.experimental.xml
 # Keystore files
 *.jks
 *.keystore
+# [T-haris-stable-signing] Exception: the fixed HARIS debug/release keystore
+# is intentionally committed so every CI build signs with the SAME key —
+# without it, Gradle falls back to a fresh random debug.keystore per runner
+# and users can never update in place (signature mismatch). This is a
+# throwaway standalone-app key, not a production secret.
+!src/android/keystore/haris-release.keystore
 
 # Google Services (e.g. APIs or Firebase)
 google-services.json

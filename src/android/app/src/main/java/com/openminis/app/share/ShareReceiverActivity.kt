@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import com.openminis.app.MainActivity
 import com.openminis.app.logging.AppLogger
 import java.io.File
 import java.util.UUID
@@ -376,7 +377,7 @@ class ShareReceiverActivity : ComponentActivity() {
     }
 
     private fun mainActivityIntent(flags: Int): Intent =
-        Intent(this, Class.forName("com.openminis.app.MainActivity")).apply {
+        Intent(this, MainActivity::class.java).apply {
             addFlags(flags)
             putExtra("shared_content", true)
         }

@@ -68,6 +68,32 @@ android {
         }
     }
 
+    // [T-haris-stable-signing] Fixed keystore committed at
+    // src/android/keystore/haris-release.keystore, used for BOTH debug and
+    // release builds. Without this, Gradle's `debug` signingConfig falls back
+    // to an auto-generated `~/.android/debug.keystore` — a fresh, random key
+    // on every CI runner. Two APKs signed with different random keys are, to
+    // PackageManager, two different apps that happen to share an
+    // applicationId: installing the second over the first is rejected with
+    // "App not installed as package conflicts with an existing package"
+    // (INSTALL_FAILED_UPDATE_INCOMPATIBLE). Pinning one keystore here makes
+    // every CI-built APK signature-compatible with every other one, so a user
+    // can always update in place instead of having to uninstall first.
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("../keystore/haris-release.keystore")
+            storePassword = "haris-standalone-2026"
+            keyAlias = "haris"
+            keyPassword = "haris-standalone-2026"
+        }
+        create("release") {
+            storeFile = file("../keystore/haris-release.keystore")
+            storePassword = "haris-standalone-2026"
+            keyAlias = "haris"
+            keyPassword = "haris-standalone-2026"
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -75,7 +101,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 

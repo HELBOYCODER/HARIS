@@ -29,12 +29,20 @@ object AppIconRepository {
     private const val TAG = "AppIconRepository"
     private const val PREFS = "app_icon_prefs"
     private const val KEY_SELECTED_ID = "selected_icon_id"
-    private const val PACKAGE_NAME = "com.openminis.app"
 
-    enum class Variant(val id: String, val aliasClass: String) {
-        Auto("auto", "$PACKAGE_NAME.MainActivityIconAuto"),
-        ClassicLight("classic_light", "$PACKAGE_NAME.MainActivityIconLight"),
-        ClassicDark("classic_dark", "$PACKAGE_NAME.MainActivityIconDark"),
+    // ponytail: was a hardcoded "com.openminis.app" package literal — broke
+    // the moment applicationId diverged from the Kotlin namespace (e.g. this
+    // HARIS fork ships as com.helboy.haris). ComponentName() with a package
+    // string that doesn't match the installed applicationId resolves to
+    // nothing, and PackageManager.setComponentEnabledSetting throws
+    // IllegalArgumentException — crashing the Appearance → App Icon screen on
+    // first tap. Suffix-only class names + ComponentName(Context, String)
+    // resolve against the CALLER's real package at runtime, so this tracks
+    // whatever applicationId the build was actually assembled with.
+    enum class Variant(val id: String, val aliasClassSuffix: String) {
+        Auto("auto", ".MainActivityIconAuto"),
+        ClassicLight("classic_light", ".MainActivityIconLight"),
+        ClassicDark("classic_dark", ".MainActivityIconDark"),
         ;
 
         companion object {
@@ -62,7 +70,7 @@ object AppIconRepository {
         val pm = ctx.packageManager
         try {
             for (variant in Variant.entries) {
-                val component = ComponentName(ctx, variant.aliasClass)
+                val component = ComponentName(ctx.packageName, ctx.packageName + variant.aliasClassSuffix)
                 val desiredState = if (variant == target) {
                     PackageManager.COMPONENT_ENABLED_STATE_ENABLED
                 } else {
