@@ -28,7 +28,28 @@ jobs:
           import zipfile as zf
           with zf.ZipFile(buf,"w") as z:
               z.writestr("META-INF/MANIFEST.MF","Manifest-Version: 1.0\n")
-              z.writestr("com/openminis/rclone/RcloneStub.class",b"")
+              # valid minimal class without javac (PRoot blocks JVM)
+              import struct
+              cbuf=io.BytesIO()
+              def u1(x): cbuf.write(struct.pack('>B',x))
+              def u2(x): cbuf.write(struct.pack('>H',x))
+              def u4(x): cbuf.write(struct.pack('>I',x))
+              def utf8(s):
+                  b=s.encode('utf-8'); u1(1); u2(len(b)); cbuf.write(b)
+              def cls(i): u1(7); u2(i)
+              def nat(n,d): u1(12); u2(n); u2(d)
+              def mr(c,n): u1(10); u2(c); u2(n)
+              cbuf.write(struct.pack('>I',0xCAFEBABE)); u2(0); u2(61)
+              u2(12)
+              utf8("com/openminis/rclone/RcloneStub"); cls(1)
+              utf8("java/lang/Object"); cls(3)
+              utf8("<init>"); utf8("()V"); utf8("Code"); utf8("SourceFile"); utf8("RcloneStub.java")
+              nat(5,6); mr(4,10)
+              u2(0x0021); u2(2); u2(4); u2(0); u2(0); u2(1)
+              u2(0x0001); u2(5); u2(6); u2(1); u2(7); u4(17); u2(1); u2(1); u4(5); cbuf.write(bytes([0x2A,0xB7,0x00,0x0B,0xB1])); u2(0); u2(0)
+              u2(1); u2(8); u4(2); u2(9)
+              cbytes=cbuf.getvalue()
+              z.writestr("com/openminis/rclone/RcloneStub.class",cbytes)
           classes_jar=buf.getvalue()
           with zf.ZipFile(out,"w",zipfile.ZIP_DEFLATED) as aar:
               aar.writestr("AndroidManifest.xml",manifest)
