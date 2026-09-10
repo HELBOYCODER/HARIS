@@ -203,13 +203,13 @@ except Exception as e:
     print(f"ERROR: {e}")
     exit(1)
 PYTHON_EOF
-                """.trimIndent(),
+""".trimIndent(),
                 timeout = 60_000L
             )
 
             ImageGenerationResult(
                 success = result.exitCode == 0,
-                outputPath = result.exitCode == 0 ? outputPath : null,
+                outputPath = if (result.exitCode == 0) outputPath else null,
                 message = result.output
             )
 

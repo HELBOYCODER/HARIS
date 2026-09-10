@@ -681,10 +681,18 @@ fun Show9RouterInstallDialog(
 // Nano Banana Installation Dialog
 @Composable
 fun ShowNanoBananaDialog(
+    onDismiss: () -> Unit,
+    onInstall: () -> Unit
+) {
+    // TODO real banana dialog — placeholder so file compiles
+    Text("NanoBanana")
+}
 
-    // New dialog to add an additional API key to an existing Nano Banana provider
-    @Composable
-    fun ShowAddKeyDialog(
+// extra key dialog
+// (was nested, now top-level)
+// New dialog to add an additional API key to an existing Nano Banana provider
+@Composable
+fun ShowAddKeyDialog(
         onDismiss: () -> Unit,
         providerId: String?,
         apiKeyInput: String,
