@@ -385,9 +385,7 @@ class MinisApp : Application(), ImageLoaderFactory {
         //
         // The individual guards below (and inside SkillRepository) close the
         // known holes, but the failure MODE is what makes this dangerous: any
-        // throw between the first assignment and `subsystemsInitialized = true
-        // [HARIS-SOUL] Room-backed hermes (board+memory+skills) — Android-native
-        try{ AppDatabase.getInstance(this); SoulRepository.get(this) } catch(e:Exception){ android.util.Log.e("HARIS-SOUL","init failed", e)}
+        // throw between the first assignment and `subsystemsInitialized = true`
         // leaves the Application permanently half-built. onCreate never re-runs,
         // so every later launch crashes reading an unassigned lateinit, each
         // crash re-trips the crash-burst detector, and the user is locked out
@@ -422,6 +420,8 @@ class MinisApp : Application(), ImageLoaderFactory {
             )
         }
         database = AppDatabase.getInstance(this)
+        // [HARIS-SOUL] Initialize Room-backed soul/hermes repository (board + memory + skills)
+        try { SoulRepository.get(this) } catch (e: Exception) { Log.e("HARIS-SOUL", "SoulRepository init failed", e) }
         chatRepository = ChatRepository(database.chatDao())
         providerRepository = ProviderRepository(this)
         envVarRepository = EnvVarRepository(this)
