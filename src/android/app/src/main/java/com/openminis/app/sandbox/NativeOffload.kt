@@ -3,6 +3,7 @@ package com.openminis.app.sandbox
 import android.net.LocalServerSocket
 import android.net.LocalSocket
 import android.util.Log
+import com.openminis.app.BuildConfig
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.File
@@ -52,7 +53,33 @@ fun interface NativeOffloadHandler {
 
 object NativeOffloadServer {
     private const val TAG = "NativeOffloadServer"
-    private const val SOCKET_NAME = "native-offload"
+
+    /**
+     * Name of the abstract unix socket the proot `native_offload` extension
+     * connects to.
+     *
+     * [T-haris-socket-collision] MUST be unique per installed app. Linux
+     * abstract-namespace socket names are DEVICE-GLOBAL, not per-app and not
+     * per-sandbox: the first process to bind a given name owns it for the whole
+     * device. This was previously the bare literal "native-offload", which is
+     * fine as long as exactly one build of this app is ever installed — but the
+     * moment two builds with different applicationIds coexist (e.g. upstream
+     * Minis `com.openminis.app` alongside this `com.helboy.haris` fork), the
+     * second app to launch cannot bind and dies in Application.onCreate with
+     *
+     *   java.io.IOException: failed to bind abstract socket 'native-offload'
+     *
+     * every single launch — an unrecoverable crash loop, because onCreate never
+     * completes. Qualifying the name with applicationId gives each install its
+     * own namespace entry so both can run side by side.
+     *
+     * Safe to change freely: the name is not a wire-format constant. It is
+     * passed to proot at spawn time as `--native-offload=<name>:<handlers>`
+     * (see PRootKernel / PersistentShell / TerminalSession), so host and guest
+     * always agree by construction.
+     */
+    private val SOCKET_NAME = "${BuildConfig.APPLICATION_ID}.native-offload"
+
     private const val MAGIC_REQ = 0x46464F4E  // 'N' 'O' 'F' 'F' little-endian
     private const val MAGIC_RSP = 0x52464F4E  // 'N' 'O' 'F' 'R'
     private const val VERSION = 1
@@ -72,7 +99,7 @@ object NativeOffloadServer {
     /** Run the opportunistic sweep every N replies, not on every single one. */
     private const val SWEEP_EVERY_N_REPLIES = 50L
 
-    const val socketName: String = SOCKET_NAME
+    val socketName: String get() = SOCKET_NAME
 
     private val handlers = ConcurrentHashMap<String, NativeOffloadHandler>()
     private val counter = AtomicLong(0)

@@ -588,7 +588,30 @@ class MinisApp : Application(), ImageLoaderFactory {
             )
         }
 
-        NativeOffloadServer.start(RootfsManager.getInstance(this).rootfsDir)
+        // [T-haris-socket-collision] Never let a bind failure kill the app.
+        //
+        // This binds a DEVICE-GLOBAL abstract unix socket. Historically a
+        // failure here threw straight out of Application.onCreate, which
+        // Android turns into "Unable to create application" — a hard crash on
+        // EVERY launch, with no way for the user to recover short of
+        // uninstalling. That is exactly what happened when two builds with
+        // different applicationIds were installed together and the other one
+        // held the name.
+        //
+        // The socket name is now applicationId-qualified so the collision
+        // should not recur, but the failure mode was severe enough that it
+        // must not be able to come back: shells and the android-* CLI tools
+        // need this socket, chat / models / settings do not. Log loudly and
+        // continue in reduced-capability mode rather than bricking launch.
+        runCatching { NativeOffloadServer.start(RootfsManager.getInstance(this).rootfsDir) }
+            .onFailure {
+                Log.e(
+                    "MinisApp",
+                    "native-offload server failed to start — shell + android-* tools " +
+                        "will be unavailable this launch, but the app remains usable",
+                    it,
+                )
+            }
 
         // Initialize session activity tracker for foreground service management
         SessionActivityTracker.init(this)
