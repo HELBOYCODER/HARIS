@@ -49,7 +49,6 @@ jobs:
           path: src/android/app/build/outputs/apk/debug/*.apk
       - name: Build HARIS Release APK (unsigned)
         working-directory: src/android
-        working-directory: src/android
         run: ./gradlew :app:assembleRelease --stacktrace
       - uses: actions/upload-artifact@v4
         with:
