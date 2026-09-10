@@ -2276,7 +2276,7 @@ class ProviderRepository(private val context: Context) {
                     // [T-android-provider-type-parity] No models endpoint to
                     // query for a type this build cannot drive; the instance
                     // keeps whatever entries the restore brought with it.
-                    ProviderType.nanoBanana, antigravity, ProviderType.unsupported -> emptyList()
+                    ProviderType.nanoBanana, ProviderType.antigravity, ProviderType.unsupported -> emptyList()
                 }
             } catch (e: Exception) {
                 android.util.Log.e("ProviderRepo", "refreshModels fetch error: ${e.message}", e)
@@ -2404,7 +2404,7 @@ class ProviderRepository(private val context: Context) {
             ProviderType.kimiCode -> "${com.openminis.app.auth.KimiDeviceFlow.CODING_API_BASE}/v1"
             // No canonical host for a type this build cannot drive. Callers
             // reaching here have already exhausted effectiveBaseURL.
-            ProviderType.nanoBanana, antigravity, ProviderType.unsupported -> "https://api.openai.com/v1"
+            ProviderType.nanoBanana, ProviderType.antigravity, ProviderType.unsupported -> "https://api.openai.com/v1"
         }
     }
 
@@ -2437,7 +2437,7 @@ class ProviderRepository(private val context: Context) {
 
     /**
      * [T-android-provider-export-oauth-token] OAuth manager for [instance],
-     * covering EVERY OAuth provider type — including gemini / nanoBanana, antigravity, which
+     * covering EVERY OAuth provider type — including gemini / nanoBanana, ProviderType.antigravity, which
      * OAuthManager.forInstance deliberately omits (it's tuned for the
      * login/logout/manual-bearer UI paths). Used only by the export/import
      * round-trip so we don't widen forInstance's shared behavior.

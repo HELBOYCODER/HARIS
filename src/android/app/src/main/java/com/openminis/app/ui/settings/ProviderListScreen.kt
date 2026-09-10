@@ -1,6 +1,7 @@
 package com.openminis.app.ui.settings
 
 import android.net.Uri
+import android.util.Log
 import com.openminis.app.provider.RouterProviderInstaller
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -26,6 +27,7 @@ import com.openminis.app.provider.NanoBananaKeyStore
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.GraphicEq
 import androidx.compose.material.icons.outlined.VpnKey
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +38,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -46,8 +49,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,6 +63,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.key
 import sh.calvin.reorderable.ReorderableColumn
 import com.openminis.app.data.model.ProviderInstance
+import com.openminis.app.data.model.ProviderType
 import com.openminis.app.data.repository.ProviderRepository
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Delete
@@ -70,6 +72,8 @@ import com.openminis.app.ui.components.SwipeRowAction
 import com.openminis.app.ui.components.SwipeRowActions
 import com.openminis.app.logging.AppLogger
 import com.openminis.app.R
+
+private const val TAG = "ProviderListScreen"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -678,16 +682,6 @@ fun Show9RouterInstallDialog(
     }
 }
 
-// Nano Banana Installation Dialog
-@Composable
-fun ShowNanoBananaDialog(
-    onDismiss: () -> Unit,
-    onInstall: () -> Unit
-) {
-    // TODO real banana dialog — placeholder so file compiles
-    Text("NanoBanana")
-}
-
 // extra key dialog
 // (was nested, now top-level)
 // New dialog to add an additional API key to an existing Nano Banana provider
@@ -754,7 +748,8 @@ fun ShowAddKeyDialog(
         }
     }
 
-    fun ShowNanoBananaDialog(
+@Composable
+fun ShowNanoBananaDialog(
     onDismiss: () -> Unit,
     apiKey: String,
     onApiKeyChange: (String) -> Unit,

@@ -105,7 +105,7 @@ object VoiceProviderFactory {
             ProviderType.kimiCode -> null
             // [T-android-provider-type-parity] No voice support for types this
             // build cannot drive.
-            ProviderType.nanoBanana, antigravity, ProviderType.unsupported -> null
+            ProviderType.nanoBanana, ProviderType.antigravity, ProviderType.unsupported -> null
         }
     }
 

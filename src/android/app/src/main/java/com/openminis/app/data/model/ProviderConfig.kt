@@ -40,7 +40,7 @@ enum class ProviderType(val displayName: String) {
     openAIResponses("Responses API (v3)"),
 
     /**
-     * iOS `antigravity`. Decode-only here — Android has no implementation, so
+     * iOS `ProviderType.antigravity`. Decode-only here — Android has no implementation, so
      * an instance restores and is visible but cannot serve a request.
      */
     antigravity("Antigravity"),
@@ -64,8 +64,6 @@ enum class ProviderType(val displayName: String) {
      */
     val isUsable: Boolean
         get() = when (this) {
-            // nanoBanana is image-gen, not chat; not usable for agent loop: it routes through the OpenAI provider
-            // with the Responses endpoint forced on.
             anthropic, gemini, openAI, openRouter, xAI, kimiCode, openAIResponses -> true
             nanoBanana, antigravity, unsupported -> false
         }
@@ -78,9 +76,7 @@ enum class ProviderType(val displayName: String) {
             openRouter -> LLMModel.allOpenRouter
             xAI -> LLMModel.allXAI
             kimiCode -> LLMModel.allKimi
-            // No built-in catalog for the decode-only types; models restored
-            // alongside the instance still appear as custom entries.
-            openAIResponses, antigravity, unsupported -> emptyList()
+            openAIResponses, nanoBanana, antigravity, unsupported -> emptyList()
         }
 
     companion object {

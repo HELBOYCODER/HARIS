@@ -19,45 +19,25 @@ jobs:
         run: |
           mkdir -p app/libs
           if [ -f app/libs/rclone.aar ]; then ls -lh app/libs/rclone.aar; exit 0; fi
-          echo "Creating minimal rclone.aar stub for CI (real build needs Go + NDK)"
-          python3 << 'PYEOF'
-          import zipfile, io, os
-          out="app/libs/rclone.aar"
-          manifest=b'<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.openminis.rclone" />'
-          buf=io.BytesIO()
-          import zipfile as zf
-          with zf.ZipFile(buf,"w") as z:
-              z.writestr("META-INF/MANIFEST.MF","Manifest-Version: 1.0\n")
-              # valid minimal class without javac (PRoot blocks JVM)
-              import struct
-              cbuf=io.BytesIO()
-              def u1(x): cbuf.write(struct.pack('>B',x))
-              def u2(x): cbuf.write(struct.pack('>H',x))
-              def u4(x): cbuf.write(struct.pack('>I',x))
-              def utf8(s):
-                  b=s.encode('utf-8'); u1(1); u2(len(b)); cbuf.write(b)
-              def cls(i): u1(7); u2(i)
-              def nat(n,d): u1(12); u2(n); u2(d)
-              def mr(c,n): u1(10); u2(c); u2(n)
-              cbuf.write(struct.pack('>I',0xCAFEBABE)); u2(0); u2(61)
-              u2(12)
-              utf8("com/openminis/rclone/gomobile/Gomobile"); cls(1)
-              utf8("java/lang/Object"); cls(3)
-              utf8("<init>"); utf8("()V"); utf8("Code"); utf8("SourceFile"); utf8("Gomobile.java")
-              nat(5,6); mr(4,10)
-              u2(0x0021); u2(2); u2(4); u2(0); u2(0); u2(1)
-              u2(0x0001); u2(5); u2(6); u2(1); u2(7); u4(17); u2(1); u2(1); u4(5); cbuf.write(bytes([0x2A,0xB7,0x00,0x0B,0xB1])); u2(0); u2(0)
-              u2(1); u2(8); u4(2); u2(9)
-              cbytes=cbuf.getvalue()
-              z.writestr("com/openminis/rclone/gomobile/Gomobile.class",cbytes)
-          classes_jar=buf.getvalue()
-          with zf.ZipFile(out,"w",zipfile.ZIP_DEFLATED) as aar:
-              aar.writestr("AndroidManifest.xml",manifest)
-              aar.writestr("classes.jar",classes_jar)
-              aar.writestr("R.txt","")
-              aar.writestr("public.txt","")
-          print("stub", os.path.getsize(out), "bytes")
-          PYEOF
+          echo "Building valid rclone.aar stub via javac"
+          mkdir -p /tmp/rclone_stub/src/com/openminis/rclone/gomobile
+          cat << 'EOF' > /tmp/rclone_stub/src/com/openminis/rclone/gomobile/Gomobile.java
+          package com.openminis.rclone.gomobile;
+          public final class Gomobile {
+              public static void rcloneInitialize() {}
+              public static String rcloneRPC(String op, String params) { return "{\"status\":200}"; }
+          }
+          EOF
+          mkdir -p /tmp/rclone_stub/bin
+          javac -source 11 -target 11 -d /tmp/rclone_stub/bin /tmp/rclone_stub/src/com/openminis/rclone/gomobile/Gomobile.java
+          jar cf /tmp/rclone_stub/classes.jar -C /tmp/rclone_stub/bin .
+          cat << 'EOF' > /tmp/rclone_stub/AndroidManifest.xml
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.openminis.rclone" />
+          EOF
+          touch /tmp/rclone_stub/R.txt /tmp/rclone_stub/public.txt
+          cd /tmp/rclone_stub
+          zip -r $GITHUB_WORKSPACE/src/android/app/libs/rclone.aar AndroidManifest.xml classes.jar R.txt public.txt
+          cd -
           ls -lh app/libs/rclone.aar
       - name: Build HARIS Debug APK
         working-directory: src/android

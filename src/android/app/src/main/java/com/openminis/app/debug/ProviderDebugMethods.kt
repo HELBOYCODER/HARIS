@@ -87,7 +87,7 @@ internal object ProviderDebugMethods {
         // [T-android-provider-type-parity] Responses API shares the OpenAI
         // host; undrivable types have no canonical base to report.
         ProviderType.openAIResponses -> "https://api.openai.com"
-        ProviderType.nanoBanana, antigravity, ProviderType.unsupported -> ""
+        ProviderType.nanoBanana, ProviderType.antigravity, ProviderType.unsupported -> ""
     }
 
     fun instancesList(context: Context, params: JSONObject): JSONObject {

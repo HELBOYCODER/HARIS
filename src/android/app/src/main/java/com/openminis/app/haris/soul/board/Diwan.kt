@@ -6,7 +6,7 @@ import kotlinx.serialization.json.Json
 @Serializable data class BoardState(val tasks:List<BoardTask> = emptyList(), val heartbeats:Map<String,Long> = emptyMap())
 object AgentBoard {
     private val json=Json{ignoreUnknownKeys=true;prettyPrint=true}
-    fun load():BoardState = try{ json.decodeFromString<BoardState>(HermesPaths.boardFile().readText()) }catch(_:Exception){ BoardState() }
+    fun load():BoardState = try{ json.decodeFromString<BoardState>(HermesPaths.boardFile().readText()) }catch(e: Exception){ BoardState() }
     private fun save(s:BoardState){ HermesPaths.boardFile().writeText(json.encodeToString(BoardState.serializer(), s)) }
     fun upsert(t:BoardTask){ val s=load(); save(s.copy(tasks=s.tasks.filterNot{it.id==t.id}+t)) }
     fun move(id:String,status:String,blocker:String?=null){ val s=load(); save(s.copy(tasks=s.tasks.map{if(it.id==id) it.copy(status=status,blocker=blocker,updatedAt=System.currentTimeMillis()) else it})) }

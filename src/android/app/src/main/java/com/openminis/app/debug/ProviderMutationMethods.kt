@@ -212,7 +212,7 @@ internal object ProviderMutationMethods {
             ProviderType.openRouter -> "https://openrouter.ai/api/v1"
             ProviderType.xAI -> "https://api.x.ai/v1"
             ProviderType.kimiCode -> "https://api.kimi.com/coding/v1"
-            ProviderType.nanoBanana, antigravity, ProviderType.unsupported -> ""
+            ProviderType.nanoBanana, ProviderType.antigravity, ProviderType.unsupported -> ""
         }
         val probeURL = when (instance.providerType) {
             ProviderType.anthropic -> "$baseURL/v1/models"
@@ -225,7 +225,7 @@ internal object ProviderMutationMethods {
             // Kimi Coding: OpenAI-compatible /models under /coding/v1.
             ProviderType.kimiCode -> if (baseURL.endsWith("/v1")) "$baseURL/models" else "$baseURL/v1/models"
             // No probe endpoint for a type this build cannot drive.
-            ProviderType.nanoBanana, antigravity, ProviderType.unsupported -> baseURL
+            ProviderType.nanoBanana, ProviderType.antigravity, ProviderType.unsupported -> baseURL
         }
         val client = okhttp3.OkHttpClient.Builder()
             .connectTimeout(timeoutMs.toLong(), java.util.concurrent.TimeUnit.MILLISECONDS)
@@ -247,7 +247,7 @@ internal object ProviderMutationMethods {
             ProviderType.kimiCode -> if (!key.isNullOrEmpty()) builder.header("Authorization", "Bearer $key")
             // [T-android-provider-type-parity] No auth scheme known for a type
             // this build cannot drive; the probe will simply fail.
-            ProviderType.nanoBanana, antigravity, ProviderType.unsupported -> { /* no auth */ }
+            ProviderType.nanoBanana, ProviderType.antigravity, ProviderType.unsupported -> { /* no auth */ }
         }
         val start = System.currentTimeMillis()
         try {

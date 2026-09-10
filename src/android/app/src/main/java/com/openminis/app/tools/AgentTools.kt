@@ -2,9 +2,9 @@ package com.openminis.app.tools
 
 import com.openminis.app.browser.BrowserAction
 import com.openminis.app.data.model.AgentToolDefinition
-import com.openminis.app.haris.soul.board.Mowakkel
-import com.openminis.app.haris.soul.SoulRepository
-import com.openminis.app.haris.soul.SoulToolHandlers
+import com.openminis.app.haris.soul.board.HandoffManager
+// SoulRepository not needed in tool definitions
+// HermesToolHandlers via SoulToolHandlers alias
 
 
 
@@ -150,4 +150,10 @@ object AgentTools {
         required = listOf("tool_title"),
         propertyOrdering = listOf("tool_title", "scope", "keywords"),
     )
+
+    private fun delegateToSubagentDefinition(): AgentToolDefinition = AgentToolDefinition(name="delegate_to_subagent", description="Delegate a task to a sub-agent", parameters=mapOf("task_id" to AgentToolParam("string",""),"title" to AgentToolParam("string",""),"role" to AgentToolParam("string",""),"brief" to AgentToolParam("string","")), required=listOf("title"))
+    private fun hermesBoardDefinition(): AgentToolDefinition = AgentToolDefinition(name="hermes_board", description="HARIS board ops", parameters=mapOf("action" to AgentToolParam("string","list|move"),"task_id" to AgentToolParam("string",""),"status" to AgentToolParam("string","")), required=listOf("action"))
+    private fun hermesMemoryDefinition(): AgentToolDefinition = AgentToolDefinition(name="hermes_memory", description="HARIS memory ops", parameters=mapOf("action" to AgentToolParam("string","write_memory|read|recall"),"text" to AgentToolParam("string","")), required=listOf("action"))
+    private fun hermesPlanDefinition(): AgentToolDefinition = AgentToolDefinition(name="hermes_plan", description="Create a plan", parameters=mapOf("goal" to AgentToolParam("string","")), required=listOf("goal"))
+
 }

@@ -34,6 +34,8 @@ import com.openminis.app.provider.ModelsDevApi
 import com.openminis.app.provider.NanoBananaKeyStore
 import com.openminis.app.sandbox.ExecutionCoordinator
 import com.openminis.app.haris.soul.SoulRepository
+import androidx.appcompat.app.AppCompatDelegate
+import java.util.Locale
 import com.openminis.app.sandbox.MountedFolderCoordinator
 import com.openminis.app.sandbox.NativeOffloadServer
 import com.openminis.app.sandbox.PRootKernel
@@ -264,23 +266,7 @@ class MinisApp : Application(), ImageLoaderFactory {
         // log/crash list still find filesDir/logs on a safe-mode launch —
         // the exact launch where the user is trying to read the crash files.
         AppLogger.primeContext(this)
-
-        // RTL support: set layout direction based on locale
-        val locale = Locale.getDefault()
-        if (locale.language == "fa" || locale.language == "ar") {
-            androidx.appcompat.app.AppCompatDelegate.setLayoutDirection(
-                this,
-                android.view.View.LAYOUT_DIRECTION_RTL
-            )
-        }
-
-
-        // [T-codex-fast-mode] Capture the app context + warm the Fast Mode
-        // flag cache so the provider layer (no Context) can read it at
-        // request-build time — including offload / title-gen calls that
-        // never pass through a ViewModel.
-        com.openminis.app.data.FastModePrefs.prime(this)
-
+        // RTL handled by system (supportsRtl in manifest); no manual direction needed.
         // Initialize Nano Banana secure key store
         NanoBananaKeyStore.init(this)
 

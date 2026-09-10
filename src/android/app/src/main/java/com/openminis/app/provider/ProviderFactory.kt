@@ -194,7 +194,7 @@ object ProviderFactory {
             // build) whose provider Android cannot speak. Fail with a clear
             // credential error rather than constructing a provider that would
             // emit malformed requests. iOS throws FactoryError here likewise.
-            ProviderType.nanoBanana, antigravity, ProviderType.unsupported -> {
+            ProviderType.nanoBanana, ProviderType.antigravity, ProviderType.unsupported -> {
                 throw com.openminis.app.data.model.LLMError.InvalidApiKey()
             }
         }

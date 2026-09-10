@@ -48,7 +48,7 @@ class NanoBananaProvider(
             val currentKey = NanoBananaKeyStore.getCurrentKey(instance.id) ?: ""
         if (currentKey.isBlank()) {
             Log.e(TAG, "No API key available for provider ${instance.id}")
-            return ImageGenerationResult(success = false, message = "No API key")
+            return@withContext ImageGenerationResult(success = false, message = "No API key")
         }
         val result = ExecutionCoordinator.execute(
                 sessionId = "nano-banana-gen-${System.currentTimeMillis()}",
@@ -68,10 +68,10 @@ if not api_key:
 
 client = genai.Client(api_key=api_key)
 
-prompt = '''$prompt'''
-output_path = '''$outputPath'''
-aspect_ratio = '''$aspectRatio'''
-resolution = '''$resolution'''
+prompt = '''${'$'}prompt'''
+output_path = '''${'$'}outputPath'''
+aspect_ratio = '''${'$'}aspectRatio'''
+resolution = '''${'$'}resolution'''
 
 print(f"[*] Generating image...")
 print(f"[*] Model: {gen_image-3.1-flash-image-preview}")
@@ -135,13 +135,13 @@ if not api_key:
 
 client = genai.Client(api_key=api_key)
 
-prompt = '''$prompt'''
-output_path = '''$outputPath'''
-aspect_ratio = '''$aspectRatio'''
-resolution = '''$resolution'''
+prompt = '''${'$'}prompt'''
+output_path = '''${'$'}outputPath'''
+aspect_ratio = '''${'$'}aspectRatio'''
+resolution = '''${'$'}resolution'''
 
 print(f"[*] Generating image (retry)...")
-print(f"[*] Model: {model_nano_banana_2}")
+print(f"[*] Model: gemini-3.1-flash-image-preview")
 print(f"[*] Prompt: {prompt[:60]}...")
 print(f"[*] Aspect: {aspect_ratio}")
 print(f"[*] Resolution: {resolution}")
@@ -198,7 +198,7 @@ PYTHON_EOF
         outputPath: String = "$DEFAULT_OUTPUT_DIR/edited_${System.currentTimeMillis()}.png"
     ): ImageGenerationResult = withContext(Dispatchers.IO) {
         try {
-            Log.d(TAG, "Editing image: $inputPath")
+            Log.d(TAG, "Editing image: ${'$'}inputPath")
 
             val result = ExecutionCoordinator.execute(
                 sessionId = "nano-banana-edit-${System.currentTimeMillis()}",
@@ -215,18 +215,17 @@ if not api_key:
 
 client = genai.Client(api_key=api_key)
 
-input_path = '''$inputPath'''
-instruction = '''$instruction'''
-output_path = '''$outputPath'''
+input_path = '''${'$'}inputPath'''
+instruction = '''${'$'}instruction'''
+output_path = '''${'$'}outputPath'''
 
 print(f"[*] Editing image: {input_path}")
 print(f"[*] Instruction: {instruction[:60]}...")
 
 try:
-    # Load and encode the input image
     with open(input_path, 'rb') as f:
         image_data = f.read()
-    
+
     response = client.models.edit_image(
         model='gemini-3.1-flash-image-preview',
         image=image_data,
@@ -236,15 +235,14 @@ try:
             'number_of_images': 1,
         }
     )
-    
-    # Save the edited image
+
     image_bytes = response.images[0].image_bytes
     with open(output_path, 'wb') as f:
         f.write(image_bytes)
-    
+
     print(f"[+] Edited image saved to: {output_path}")
     print("SUCCESS")
-    
+
 except Exception as e:
     print(f"ERROR: {e}")
     exit(1)
@@ -259,18 +257,15 @@ PYTHON_EOF
             if (!success && (output.contains("Rate limit") || output.contains("quota_exceeded") || output.contains("429"))) {
                 Log.w(TAG, "Rate limit hit, rotating Gemini API key")
                 NanoBananaKeyStore.rotateKey(instance.id)
-                // Re-run with next key
                 val newKey = NanoBananaKeyStore.getCurrentKey(instance.id) ?: ""
                 if (newKey.isNotBlank()) {
                     val retryResult = ExecutionCoordinator.execute(
-                        sessionId = "nano-banana-gen-retry-${System.currentTimeMillis()}",
+                        sessionId = "nano-banana-edit-retry-${System.currentTimeMillis()}",
                         command = """
                             export GEMINI_API_KEY=\"$newKey\"\n                            source /etc/profile
                             python3 << 'PYTHON_EOF'
 import os
 import google.genai as genai
-from PIL import Image
-import io
 
 api_key = os.environ.get('GEMINI_API_KEY')
 if not api_key:
@@ -279,32 +274,28 @@ if not api_key:
 
 client = genai.Client(api_key=api_key)
 
-prompt = '''$prompt'''
-output_path = '''$outputPath'''
-aspect_ratio = '''$aspectRatio'''
-resolution = '''$resolution'''
-
-print(f"[*] Generating image (retry)...")
-print(f"[*] Model: {model_nano_banana_2}")
-print(f"[*] Prompt: {prompt[:60]}...")
-print(f"[*] Aspect: {aspect_ratio}")
-print(f"[*] Resolution: {resolution}")
+input_path = '''${'$'}inputPath'''
+instruction = '''${'$'}instruction'''
+output_path = '''${'$'}outputPath'''
 
 try:
-    size = "1K" if resolution == "1K" else "2K"
-    response = client.models.generate_images(
+    with open(input_path, 'rb') as f:
+        image_data = f.read()
+
+    response = client.models.edit_image(
         model='gemini-3.1-flash-image-preview',
-        prompt=prompt,
+        image=image_data,
+        instruction=instruction,
         config={
-            'aspect_ratio': aspect_ratio,
+            'aspect_ratio': '16:9',
             'number_of_images': 1,
-            'output_size': size,
         }
     )
+
     image_bytes = response.images[0].image_bytes
     with open(output_path, 'wb') as f:
         f.write(image_bytes)
-    print(f"[+] Image saved to: {output_path}")
+    print(f"[+] Edited image saved to: {output_path}")
     print("SUCCESS")
 except Exception as e:
     print(f"ERROR: {e}")
@@ -342,7 +333,7 @@ PYTHON_EOF
                 sessionId = "nano-banana-verify",
                 command = """
                     source /etc/profile
-                    if [ -n "$GEMINI_API_KEY" ]; then
+                    if [ -n "${'$'}GEMINI_API_KEY" ]; then
                         echo "API_KEY_SET"
                     else
                         echo "API_KEY_MISSING"
@@ -359,7 +350,7 @@ PYTHON_EOF
 
     data class ImageGenerationResult(
         val success: Boolean,
-        val outputPath: String?,
+        val outputPath: String? = null,
         val message: String
     )
 }

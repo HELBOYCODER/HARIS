@@ -1339,7 +1339,7 @@ class ModelUseOffloadHandler(
             ProviderType.anthropic, ProviderType.xAI, ProviderType.kimiCode,
             // [T-android-provider-type-parity] No image-param hint for types
             // this build cannot drive.
-            ProviderType.nanoBanana, antigravity, ProviderType.unsupported, null -> ""
+            ProviderType.nanoBanana, ProviderType.antigravity, ProviderType.unsupported, null -> ""
         }
     }
 

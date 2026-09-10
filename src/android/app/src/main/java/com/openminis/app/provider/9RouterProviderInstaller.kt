@@ -72,8 +72,7 @@ object RouterProviderInstaller {
                 credentialType = ProviderCredential.apiKey,
                 isEnabled = true,
                 customBaseURL = "http://127.0.0.1:$DEFAULT_PORT",
-                appendV1Suffix = false,
-                allowsEmptyAPIKey = true
+                appendV1Suffix = false
             )
 
             // Save to repository
@@ -86,8 +85,7 @@ object RouterProviderInstaller {
                     "credentialType": "apiKey",
                     "isEnabled": true,
                     "customBaseURL": "http://127.0.0.1:$DEFAULT_PORT",
-                    "appendV1Suffix": false,
-                    "allowsEmptyAPIKey": true
+                    "appendV1Suffix": false
                 }
                 """.trimIndent()
             )
@@ -147,8 +145,7 @@ object RouterProviderInstaller {
             credentialType = ProviderCredential.apiKey,
             isEnabled = true,
             customBaseURL = "http://127.0.0.1:$DEFAULT_PORT",
-            appendV1Suffix = false,
-            allowsEmptyAPIKey = true
+            appendV1Suffix = false
         )
     }
 }
