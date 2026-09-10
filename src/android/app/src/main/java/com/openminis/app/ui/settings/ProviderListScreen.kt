@@ -621,6 +621,7 @@ private fun ShadowVoiceRow(
 }
 
 // 9Router Installation Dialog
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Show9RouterInstallDialog(
     onDismiss: () -> Unit,
@@ -685,6 +686,7 @@ fun Show9RouterInstallDialog(
 // extra key dialog
 // (was nested, now top-level)
 // New dialog to add an additional API key to an existing Nano Banana provider
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShowAddKeyDialog(
         onDismiss: () -> Unit,
@@ -748,6 +750,7 @@ fun ShowAddKeyDialog(
         }
     }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShowNanoBananaDialog(
     onDismiss: () -> Unit,

@@ -34,8 +34,6 @@ import com.openminis.app.provider.ModelsDevApi
 import com.openminis.app.provider.NanoBananaKeyStore
 import com.openminis.app.sandbox.ExecutionCoordinator
 import com.openminis.app.haris.soul.SoulRepository
-import androidx.appcompat.app.AppCompatDelegate
-import java.util.Locale
 import com.openminis.app.sandbox.MountedFolderCoordinator
 import com.openminis.app.sandbox.NativeOffloadServer
 import com.openminis.app.sandbox.PRootKernel

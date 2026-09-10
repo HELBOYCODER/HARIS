@@ -21,15 +21,28 @@ jobs:
           if [ -f app/libs/rclone.aar ]; then ls -lh app/libs/rclone.aar; exit 0; fi
           echo "Building valid rclone.aar stub via javac"
           mkdir -p /tmp/rclone_stub/src/com/openminis/rclone/gomobile
+          cat << 'EOF' > /tmp/rclone_stub/src/com/openminis/rclone/gomobile/RcloneResult.java
+          package com.openminis.rclone.gomobile;
+          public final class RcloneResult {
+              private long status = 200L;
+              private String output = "{}";
+              public long getStatus() { return status; }
+              public void setStatus(long status) { this.status = status; }
+              public String getOutput() { return output; }
+              public void setOutput(String output) { this.output = output; }
+          }
+          EOF
           cat << 'EOF' > /tmp/rclone_stub/src/com/openminis/rclone/gomobile/Gomobile.java
           package com.openminis.rclone.gomobile;
           public final class Gomobile {
               public static void rcloneInitialize() {}
-              public static String rcloneRPC(String op, String params) { return "{\"status\":200}"; }
+              public static RcloneResult rcloneRPC(String method, String params) {
+                  return new RcloneResult();
+              }
           }
           EOF
           mkdir -p /tmp/rclone_stub/bin
-          javac -source 11 -target 11 -d /tmp/rclone_stub/bin /tmp/rclone_stub/src/com/openminis/rclone/gomobile/Gomobile.java
+          javac -source 11 -target 11 -d /tmp/rclone_stub/bin /tmp/rclone_stub/src/com/openminis/rclone/gomobile/*.java
           jar cf /tmp/rclone_stub/classes.jar -C /tmp/rclone_stub/bin .
           cat << 'EOF' > /tmp/rclone_stub/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.openminis.rclone" />
