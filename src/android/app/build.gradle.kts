@@ -33,11 +33,11 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.openminis.app"
+        applicationId = "com.helboy.haris"
         minSdk = 26
         targetSdk = 35
-        versionCode = 25
-        versionName = "1.13"
+        versionCode = 1
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

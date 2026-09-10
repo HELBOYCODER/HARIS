@@ -206,6 +206,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="minis" />
+                <data android:scheme="haris" />
             </intent-filter>
         </activity>
 
@@ -373,7 +374,7 @@
             android:excludeFromRecents="false"
             android:theme="@style/Theme.Minis">
             <intent-filter>
-                <action android:name="com.openminis.app.action.OPEN_WEBAPP" />
+                <action android:name="com.helboy.haris.action.OPEN_WEBAPP" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
