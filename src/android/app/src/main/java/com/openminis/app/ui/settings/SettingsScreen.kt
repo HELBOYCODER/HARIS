@@ -115,7 +115,6 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-var isPonytailEnabled by remember { mutableStateOf(true) }  // PONYTAIL Mode (Lazy Senior Dev)
                 title = { Text(stringResource(R.string.settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -128,6 +127,7 @@ var isPonytailEnabled by remember { mutableStateOf(true) }  // PONYTAIL Mode (La
             )
         },
     ) { padding ->
+        var isPonytailEnabled by remember { mutableStateOf(true) }
         Column(
             modifier = Modifier
                 .fillMaxSize()
