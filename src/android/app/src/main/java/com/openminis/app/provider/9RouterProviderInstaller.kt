@@ -40,15 +40,22 @@ object RouterProviderInstaller {
         try {
             Log.d(TAG, "Starting 9Router installation...")
 
-            // Step 1: Run setup script in sandbox
+            // Step 1: Run self-contained setup command in sandbox
             val session = "9router-setup"
             val setupResult = ExecutionCoordinator.execute(
                 sessionId = session,
                 command = """
-                    /assets/9router-setup.sh || \
-                    (echo "Installing dependencies..." && \
-                     apk add --no-cache nodejs npm && \
-                     /assets/9router-setup.sh)
+                    mkdir -p /data/9router /root/.9router
+                    if ! command -v node >/dev/null 2>&1; then
+                        apk add --no-cache nodejs npm curl
+                    fi
+                    if ! command -v 9router >/dev/null 2>&1; then
+                        npm install -g 9router@latest
+                    fi
+                    pkill -f "9router" || true
+                    nohup 9router --port $DEFAULT_PORT --data-dir /data/9router > /data/9router/server.log 2>&1 &
+                    sleep 2
+                    echo "ok"
                 """.trimIndent(),
                 timeout = 300_000L // 5 minutes
             )
@@ -90,7 +97,16 @@ object RouterProviderInstaller {
                 """.trimIndent()
             )
 
-            Log.d(TAG, "Provider registered with ID: $providerId")
+            // Pre-seed 100% free models from Antigravity/OpenCode into 9Router
+            val freeModels = listOf(
+                LLMModel(id = "oc/mimo-v2.5-free", displayName = "MiMo v2.5 (Free)"),
+                LLMModel(id = "oc/ling-3.0-flash-fin-free", displayName = "Ling 3.0 Flash (Free)"),
+                LLMModel(id = "oc/nemotron-3.5-lightning-free", displayName = "Nemotron 3.5 Lightning (Free)"),
+                LLMModel(id = "oc/big-pickle", displayName = "Big Pickle (Free)")
+            )
+            providerRepository.replaceEntries(providerId, freeModels)
+
+            Log.d(TAG, "Provider registered with ID: $providerId and ${freeModels.size} free models")
 
             // Step 3: Verify health
             val healthResult = ExecutionCoordinator.execute(

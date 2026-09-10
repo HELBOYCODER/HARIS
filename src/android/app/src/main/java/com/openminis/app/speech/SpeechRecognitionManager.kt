@@ -62,7 +62,9 @@ object SpeechRecognitionManager {
     private val _recognizedText = MutableStateFlow("")
     val recognizedText: StateFlow<String> = _recognizedText.asStateFlow()
 
-    private val _locale = MutableStateFlow(Locale.getDefault())
+    private val _locale = MutableStateFlow(
+        if (Locale.getDefault().language == "fa") Locale("fa", "IR") else Locale.getDefault()
+    )
     val locale: StateFlow<Locale> = _locale.asStateFlow()
 
     private val _selectedEngineId = MutableStateFlow("system")

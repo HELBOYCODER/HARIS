@@ -153,6 +153,8 @@ object Routes {
     const val CHAT_FILES = "chat_files/{sessionId}"
     fun chatFiles(sessionId: String) = "chat_files/$sessionId"
     const val MEMORY = "memory"
+    /** [HARIS-HERMES] Dedicated Hermes capabilities & agent management screen. */
+    const val HERMES = "hermes"
     /** [T-mcp-integration-android] MCP Integrations management screen. */
     const val MCP = "mcp"
     /** [T-soul-md] SOUL.md editor. */
@@ -593,6 +595,7 @@ fun AppNavigation(
                 onMemoryClick = { navController.safeNavigate(Routes.MEMORY) },
                 onMcpClick = { navController.safeNavigate(Routes.MCP) },
                 onSoulClick = { navController.safeNavigate(Routes.SOUL) },
+                onHermesClick = { navController.safeNavigate(Routes.HERMES) },
                 onPermissionsClick = { navController.safeNavigate(Routes.PERMISSIONS) },
                 onUsageClick = { navController.safeNavigate(Routes.USAGE_STATS) },
                 onAppearanceClick = { navController.safeNavigate(Routes.APPEARANCE) },
@@ -1285,6 +1288,14 @@ fun AppNavigation(
         composable(Routes.SOUL) {
             com.openminis.app.ui.settings.SoulSettingsScreen(
                 onBack = { navController.safePopBackStack() },
+            )
+        }
+
+        composable(Routes.HERMES) {
+            com.openminis.app.ui.settings.HermesScreen(
+                onBack = { navController.safePopBackStack() },
+                onOpenSkillDetail = { skillId -> navController.safeNavigate(Routes.skillDetail(skillId)) },
+                onOpenTerminal = { cmd -> navController.safeNavigate(Routes.terminal(initCommand = cmd)) },
             )
         }
 

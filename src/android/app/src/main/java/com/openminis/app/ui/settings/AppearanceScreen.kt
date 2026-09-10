@@ -165,6 +165,7 @@ private data class LanguageOption(val code: String, val flag: String, val label:
 // and stay as literals \u2014 Chinese is always "\u7B80\u4F53\u4E2D\u6587", regardless of UI locale.
 private val languageOptions = listOf(
     LanguageOption("", "\uD83C\uDF10", ""),
+    LanguageOption("fa", "\uD83C\uDDEE\uD83C\uDDF7", "فارسی"),
     LanguageOption("en", "\uD83C\uDDFA\uD83C\uDDF8", "English"),
     LanguageOption("zh", "\uD83C\uDDE8\uD83C\uDDF3", "简体中文"),
     // zh-Hant: values-zh-rTW has carried a Traditional Chinese translation

@@ -56,10 +56,25 @@ fun SpeechLanguagePickerSheet(
     val supported by SpeechRecognitionManager.supportedLocales.collectAsState()
     val current by SpeechRecognitionManager.locale.collectAsState()
 
+    val defaultLocales = remember {
+        listOf(
+            Locale("fa", "IR"),
+            Locale("en", "US"),
+            Locale("ar", "SA"),
+            Locale("tr", "TR"),
+            Locale("de", "DE"),
+            Locale("fr", "FR"),
+            Locale("ru", "RU"),
+            Locale("zh", "CN"),
+        )
+    }
+
     val ordered = remember(supported) {
+        val pool = if (supported.isNotEmpty()) supported else defaultLocales
         val systemLang = Locale.getDefault().language
-        supported.sortedWith(
-            compareByDescending<Locale> { it.language == systemLang }
+        pool.sortedWith(
+            compareByDescending<Locale> { it.language == "fa" }
+                .thenByDescending { it.language == systemLang }
                 .thenBy { it.getDisplayName(Locale.getDefault()) }
         )
     }

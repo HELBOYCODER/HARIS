@@ -115,8 +115,12 @@ object NanoBananaProviderInstaller {
                 command = """
                     source /etc/profile
                     python3 << 'PYTHON_EOF'
-import os
-import google.genai as genai
+import os, sys, subprocess
+try:
+    import google.genai as genai
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "google-genai", "pillow", "--break-system-packages"])
+    import google.genai as genai
 api_key = os.environ.get('GEMINI_API_KEY')
 if not api_key:
     print("ERROR: GEMINI_API_KEY not set")

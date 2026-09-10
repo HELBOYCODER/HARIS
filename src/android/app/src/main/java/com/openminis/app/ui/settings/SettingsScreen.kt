@@ -91,6 +91,8 @@ fun SettingsScreen(
     // Agent Runtime section; default no-op for callers that haven't wired
     // the route yet.
     onSoulClick: () -> Unit = {},
+    // [HARIS-HERMES] Dedicated Hermes capabilities & agent system screen.
+    onHermesClick: () -> Unit = {},
     onPermissionsClick: () -> Unit = {},
     onUsageClick: () -> Unit = {},
     onAppearanceClick: () -> Unit = {},
@@ -175,6 +177,21 @@ fun SettingsScreen(
                 )
             }
 
+            // -- Hermes Agent System --
+            SettingsSection(
+                title = "هرمس (Hermes System)",
+                footer = "مدیریت مهارت‌ها، دیوان وظایف، افزودن امکانات جدید و روح هل‌بوی",
+            ) {
+                SettingsItem(
+                    icon = Icons.Outlined.Psychology,
+                    iconColor = Color(0xFFFF5722),
+                    title = "بخش اختصاصی هرمس (Hermes Hub)",
+                    subtitle = "افزودن امکان و اسکیل جدید، دیوان وظایف، حافظه و تنظیمات روح",
+                    onClick = onHermesClick,
+                    showDivider = false,
+                )
+            }
+
             // -- Agent Runtime --
             SettingsSection(title = stringResource(R.string.settings_section_agent_runtime)) {
                 SettingsItem(
@@ -199,37 +216,6 @@ fun SettingsScreen(
                     subtitle = stringResource(R.string.settings_memory_subtitle),
                     onClick = onMemoryClick,
                 )
-                // PONYTAIL Mode (Lazy Senior Dev Spirit)
-                SettingsSection(
-                    title = "Spirit Mode",
-                    footer = "Enable PONYTAIL Lazy Senior Dev rules"
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { isPonytailEnabled = !isPonytailEnabled },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(
-                                text = "PONYTAIL",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                            Text(
-                                text = "Lazy Senior Dev Spirit",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                        Switch(
-                            checked = isPonytailEnabled,
-                            onCheckedChange = { isPonytailEnabled = it }
-                        )
-                    }
-                }
                 // [T-mcp-integration-android] MCP Integrations — directly below Memory.
                 // [T-android-mcp-icon-distinct] Dashboard (2x2 block grid) instead of
                 // Extension so MCP no longer shares the Skills row's puzzle-piece icon —
@@ -249,6 +235,39 @@ fun SettingsScreen(
                     onClick = onEnvVarsClick,
                     showDivider = false,
                 )
+            }
+
+            // PONYTAIL Mode (Lazy Senior Dev Spirit)
+            SettingsSection(
+                title = "روح هل‌بوی (Spirit Mode)",
+                footer = "فعال‌سازی قوانین PONYTAIL و کدنویسی تنبل senior dev",
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { isPonytailEnabled = !isPonytailEnabled }
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = "PONYTAIL",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "حالت Lazy Senior Dev و ارواح هل‌بوی",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(
+                        checked = isPonytailEnabled,
+                        onCheckedChange = { isPonytailEnabled = it }
+                    )
+                }
             }
 
             // -- Storage --

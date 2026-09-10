@@ -55,10 +55,16 @@ class NanoBananaProvider(
                 command = """
                     export GEMINI_API_KEY=\"$currentKey\"\n                    source /etc/profile
                     python3 << 'PYTHON_EOF'
-import os
-import google.genai as genai
-from PIL import Image
-import io
+import os, sys, subprocess
+try:
+    import google.genai as genai
+    from PIL import Image
+    import io
+except ImportError:
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "google-genai", "pillow", "--break-system-packages"])
+    import google.genai as genai
+    from PIL import Image
+    import io
 
 # Initialize client
 api_key = os.environ.get('GEMINI_API_KEY')
@@ -74,7 +80,7 @@ aspect_ratio = '''${'$'}aspectRatio'''
 resolution = '''${'$'}resolution'''
 
 print(f"[*] Generating image...")
-print(f"[*] Model: {gen_image-3.1-flash-image-preview}")
+print("[*] Model: gemini-3.1-flash-image-preview")
 print(f"[*] Prompt: {prompt[:60]}...")
 print(f"[*] Aspect: {aspect_ratio}")
 print(f"[*] Resolution: {resolution}")

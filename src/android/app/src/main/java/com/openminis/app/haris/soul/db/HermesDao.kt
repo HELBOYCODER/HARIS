@@ -25,11 +25,17 @@ interface HermesDao {
     suspend fun ledger(): List<MemoryEntryEntity>
     @Query("SELECT * FROM hermes_memory WHERE kind=:kind ORDER BY createdAt DESC LIMIT :limit")
     suspend fun listMemory(kind: String, limit: Int): List<MemoryEntryEntity>
+    @Query("SELECT * FROM hermes_memory ORDER BY createdAt DESC LIMIT 100")
+    fun observeMemory(): Flow<List<MemoryEntryEntity>>
+    @Query("DELETE FROM hermes_memory WHERE rowId=:rowId")
+    suspend fun deleteMemory(rowId: Long)
     // SKILLS
     @Query("SELECT * FROM hermes_skills ORDER BY name")
     fun observeSkills(): Flow<List<HermesSkillEntity>>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertSkill(e: HermesSkillEntity)
+    @Query("DELETE FROM hermes_skills WHERE name=:name")
+    suspend fun deleteSkill(name: String)
     @Query("SELECT * FROM hermes_skills ORDER BY name")
     suspend fun listSkills(): List<HermesSkillEntity>
     @Query("SELECT COUNT(*) FROM hermes_skills")

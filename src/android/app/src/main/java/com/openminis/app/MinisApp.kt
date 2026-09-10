@@ -421,7 +421,26 @@ class MinisApp : Application(), ImageLoaderFactory {
         }
         database = AppDatabase.getInstance(this)
         // [HARIS-SOUL] Initialize Room-backed soul/hermes repository (board + memory + skills)
-        try { SoulRepository.get(this) } catch (e: Exception) { Log.e("HARIS-SOUL", "SoulRepository init failed", e) }
+        try {
+            val soulRepo = SoulRepository.get(this)
+            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                if (soulRepo.skillsList().isEmpty()) {
+                    soulRepo.seedSkills(listOf(
+                        "oh-my-hermes",
+                        "hermes-operator",
+                        "hermes-researcher",
+                        "hermes-planner",
+                        "hermes-reviewer",
+                        "hermes-memory-keeper",
+                        "9router",
+                        "nano-banana",
+                        "ponytail",
+                        "web-search",
+                        "stt-persian"
+                    ))
+                }
+            }
+        } catch (e: Exception) { Log.e("HARIS-SOUL", "SoulRepository init failed", e) }
         chatRepository = ChatRepository(database.chatDao())
         providerRepository = ProviderRepository(this)
         envVarRepository = EnvVarRepository(this)

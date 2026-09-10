@@ -160,12 +160,21 @@ fun MinisTheme(
     val typography = scaledTypography(fontScale)
     val chatPalette = if (darkTheme) DarkChatPalette else LightChatPalette
 
+    // [T-haris-rtl] Auto-detect RTL for Persian (fa) and Arabic (ar)
+    val currentLocale = java.util.Locale.getDefault()
+    val isRtl = currentLocale.language == "fa" || currentLocale.language == "ar"
+    val layoutDirection = if (isRtl) androidx.compose.ui.unit.LayoutDirection.Rtl else androidx.compose.ui.unit.LayoutDirection.Ltr
+
     MaterialTheme(
         colorScheme = colorScheme,
         shapes = MinisShapes,
         typography = typography,
     ) {
-        CompositionLocalProvider(LocalChatPalette provides chatPalette, content = content)
+        CompositionLocalProvider(
+            LocalChatPalette provides chatPalette,
+            androidx.compose.ui.platform.LocalLayoutDirection provides layoutDirection,
+            content = content
+        )
     }
 }
 
