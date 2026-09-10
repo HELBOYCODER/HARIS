@@ -14,8 +14,12 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         CompactMarkerEntity::class,
         WebAppShortcutEntity::class,
         FolderEntity::class,
+        // [HARIS-SOUL] melded — was HermesDatabase, now lives in the single AppDatabase (one heart)
+        com.openminis.app.haris.soul.db.BoardTaskEntity::class,
+        com.openminis.app.haris.soul.db.MemoryEntryEntity::class,
+        com.openminis.app.haris.soul.db.HermesSkillEntity::class,
     ],
-    version = 12,
+    version = 13,
     // [T-android-downgrade-compat] Kept ON so MigrationTestHelper and CI can
     // validate every migration (and its downgrade counterpart) against the
     // committed schema json. Without it the upgrade/downgrade chain has no
@@ -25,6 +29,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 abstract class AppDatabase : RoomDatabase() {
     abstract fun chatDao(): ChatDao
     abstract fun webAppShortcutDao(): WebAppShortcutDao
+    abstract fun soulDao(): com.openminis.app.haris.soul.db.HermesDao
 
     companion object {
         @Volatile
@@ -301,6 +306,18 @@ abstract class AppDatabase : RoomDatabase() {
          * [com.openminis.app.data.db.DatabaseVersionGuard], which is the
          * backstop for exactly this case.
          */
+        /** [HARIS-SOUL] v12→v13: meld hermes tables into AppDatabase (one DB, one heart). */
+        val MIGRATION_12_13 = object : Migration(12, 13) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("CREATE TABLE IF NOT EXISTS hermes_board (id TEXT NOT NULL PRIMARY KEY, title TEXT NOT NULL, role TEXT NOT NULL, status TEXT NOT NULL, blocker TEXT, updatedAt INTEGER NOT NULL, parentId TEXT)")
+                db.execSQL("CREATE TABLE IF NOT EXISTS hermes_memory (rowId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, kind TEXT NOT NULL, content TEXT NOT NULL, createdAt INTEGER NOT NULL)")
+                db.execSQL("CREATE TABLE IF NOT EXISTS hermes_skills (name TEXT NOT NULL PRIMARY KEY, present INTEGER NOT NULL, sizeKb INTEGER NOT NULL, lastSeen INTEGER NOT NULL, health TEXT NOT NULL)")
+                db.execSQL("CREATE INDEX IF NOT EXISTS index_hermes_board_updatedAt ON hermes_board(updatedAt)")
+            }
+        }
+        val MIGRATION_13_12 = object : Migration(13, 12) {
+            override fun migrate(db: SupportSQLiteDatabase) { /* leave tables — lossless downgrade */ }
+        }
         val MIGRATION_12_11 = object : Migration(12, 11) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 // Intentionally empty. See the doc comment above — the four
@@ -321,7 +338,7 @@ abstract class AppDatabase : RoomDatabase() {
                     .addMigrations(
                         MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6,
                         MIGRATION_6_7, MIGRATION_7_8, MIGRATION_8_9, MIGRATION_9_10, MIGRATION_10_11,
-                        MIGRATION_11_12, MIGRATION_12_11,
+                        MIGRATION_11_12, MIGRATION_12_13, MIGRATION_13_12, MIGRATION_12_11,
                     )
                     .build()
                     .also { INSTANCE = it }

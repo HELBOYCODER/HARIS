@@ -2,6 +2,12 @@ package com.openminis.app.tools
 
 import com.openminis.app.browser.BrowserAction
 import com.openminis.app.data.model.AgentToolDefinition
+import com.openminis.app.haris.soul.board.Mowakkel
+import com.openminis.app.haris.soul.SoulRepository
+import com.openminis.app.haris.soul.SoulToolHandlers
+
+
+
 import com.openminis.app.data.model.AgentToolParam
 
 /**
@@ -40,6 +46,14 @@ object AgentTools {
             add(memoryWriteDefinition())
             add(memoryGetDefinition())
         }
+
+
+
+        // [HARIS-SOUL] sub-agent + board + memory
+        add(delegateToSubagentDefinition())
+        add(hermesBoardDefinition())
+        add(hermesMemoryDefinition())
+        add(hermesPlanDefinition())
     }
 
     // Aligned with iOS AIChatViewModel.swift:4982-4993
