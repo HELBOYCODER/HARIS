@@ -1126,7 +1126,12 @@ class SessionListViewModel(
      *   iOS defers the same way via pendingFolderDraft).
      */
     fun createNewSession(groupId: String? = null, folderId: String? = null): String? {
-        if (providerRepository.allVisibleEntries().isEmpty()) return null
+        // ponytail: was `if (allVisibleEntries().isEmpty()) return null` — FAB silently
+        // no-oped when a provider existed but had no visible model (disabled instance
+        // or hidden entries). `hasProviders` (instances.isNotEmpty) still showed the
+        // button, so tap did nothing. Drafts are cheap and ChatViewModel.ensureSession
+        // already falls back to modelId="unknown" + model-picker, so always mint the
+        // draft and let the chat handle missing-model UX.
         var id = "__new__${java.util.UUID.randomUUID()}"
         if (groupId != null) id += "__grp__$groupId"
         if (folderId != null) id += "__fld__$folderId"
